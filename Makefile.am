@@ -10,16 +10,24 @@ lib_LTLIBRARIES =
 noinst_LTLIBRARIES =
 
 bin_PROGRAMS += ipcd
-ipcd_SOURCES  = src/ipc/ipcd.c
+ipcd_SOURCES = \
+	src/ipc/ipcd.c
+ipcd_LDADD = \
+	libshared.la
 
 lib_LTLIBRARIES  += libipc.la
-libipc_la_SOURCES = src/libipc/libipc.h
+libipc_la_SOURCES = \
+	src/libipc/libipc.h
 
 noinst_LTLIBRARIES  += libshared.la
 libshared_la_SOURCES = \
+	src/shared/conf.h \
+	src/shared/conf.c \
 	src/shared/string-util.h \
 	src/shared/string-util.c
 
 noinst_PROGRAMS += test-shared
-test_shared_SOURCES = src/shared/test-shared.c
-test_shared_LDADD   = libshared.la
+test_shared_SOURCES = \
+	src/shared/test-shared.c
+test_shared_LDADD = \
+	libshared.la
