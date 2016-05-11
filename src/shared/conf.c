@@ -1,7 +1,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <limits.h>
 
 #include "conf.h"
 #include "string-util.h"
@@ -59,7 +58,7 @@ int conf_parse(const char *filename)
 	}
 
 	while (!err && !feof(f)) {
-		char l[LINE_MAX];
+		char l[2048];
 
 		if (!fgets(l, sizeof(l), f))
 			break;
