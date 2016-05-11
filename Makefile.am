@@ -9,3 +9,6 @@ noinst_LTLIBRARIES =
 
 bin_PROGRAMS += ipcd
 ipcd_SOURCES  = src/ipc/ipcd.c
+
+lib_LTLIBRARIES  += libipc.la
+libipc_la_SOURCES = src/libipc/libipc.h
