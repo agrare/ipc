@@ -1,12 +1,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "test/test-suite.h"
 #include "string-util.h"
-
-struct unit_test {
-	int (*unit_test_fn)(void);
-	const char *name;
-};
 
 static int test_string_util_strstrip_null_string(void)
 {
@@ -87,38 +83,35 @@ static int test_string_util_strstrip_leading_and_middle_and_trailing_spaces(void
 
 static int test_string_util_strstrip(void)
 {
-	int err, nr_errors = 0;
-	size_t i, nr_tests;
+	struct test_suite test_suite = TEST_SUITE_INIT("string-util: strstrip");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_null_string, "null string");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_empty_string, "empty string");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_one_space, "one space");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_multiple_spaces, "multiple spaces");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_leading_space, "leading space");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_multiple_leading_spaces, "multiple leading spaces");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_trailing_space, "trailing space");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_multiple_trailing_spaces, "multiple trailing spaces");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_leading_and_trailing_space, "leading and trailing space");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_multiple_leading_and_trailing_spaces, "multiple leading and trailing spaces");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_middle_space, "middle space");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_leading_and_middle_spaces, "leading and middle space");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_strstrip_leading_and_middle_and_trailing_spaces, "leading, middle, and trailing spaces");
 
-	struct unit_test unit_tests[] = {
-		{test_string_util_strstrip_null_string,               "strstrip: null string"},
-		{test_string_util_strstrip_empty_string,              "strstrip: empty string"},
-		{test_string_util_strstrip_one_space,                 "strstrip: one space"},
-		{test_string_util_strstrip_multiple_spaces,           "strstrip: multiple spaces"},
-		{test_string_util_strstrip_leading_space,             "strstrip: leading space"},
-		{test_string_util_strstrip_multiple_leading_spaces,   "strstrip: multiple leading spaces"},
-		{test_string_util_strstrip_trailing_space,            "strstrip: trailing space"},
-		{test_string_util_strstrip_multiple_trailing_spaces,  "strstrip: multiple trailing spaces"},
-		{test_string_util_strstrip_leading_and_trailing_space,             "strstrip: leading and trailing space"},
-		{test_string_util_strstrip_multiple_leading_and_trailing_spaces,   "strstrip: multiple leading and trailing spaces"},
-		{test_string_util_strstrip_middle_space,              "strstrip: middle space"},
-		{test_string_util_strstrip_leading_and_middle_spaces, "strstrip: leading and middle space"},
-		{test_string_util_strstrip_leading_and_middle_and_trailing_spaces, "strstrip: leading, middle, and trailing spaces"},
-	};
-
-	nr_tests = sizeof(unit_tests)/sizeof(*unit_tests);
-
-	for (i = 0; i < nr_tests; i++) {
-		struct unit_test *ut = &unit_tests[i];
-
-		err = ut->unit_test_fn();
-		if (err != 0) {
-			fprintf(stderr, "%s: failed\n", ut->name);
-			nr_errors++;
-		}
-	}
-
-	return nr_errors;
+	return test_suite_run(&test_suite);
 }
 
 static int test_string_util_truncate_nl(void)

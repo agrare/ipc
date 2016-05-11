@@ -26,8 +26,16 @@ libshared_la_SOURCES = \
 	src/shared/string-util.h \
 	src/shared/string-util.c
 
+noinst_LTLIBRARIES += libtest.la
+libtest_la_SOURCES = \
+	src/test/test-suite.h \
+	src/test/test-suite.c \
+	src/test/unit-test.h \
+	src/test/unit-test.c
+
 noinst_PROGRAMS += test-shared
 test_shared_SOURCES = \
 	src/shared/test-shared.c
 test_shared_LDADD = \
-	libshared.la
+	libshared.la \
+	libtest.la
