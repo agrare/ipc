@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "conf.h"
+#include "conf-parser.h"
 #include "string-util.h"
 
 static int parse_line(char *line)

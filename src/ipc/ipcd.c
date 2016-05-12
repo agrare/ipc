@@ -1,4 +1,4 @@
-#include "conf.h"
+#include "conf-parser.h"
 
 int main(void)
 {

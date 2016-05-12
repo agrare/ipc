@@ -24,8 +24,8 @@ pkginclude_HEADERS += \
 
 noinst_LTLIBRARIES  += libshared.la
 libshared_la_SOURCES = \
-	src/shared/conf.h \
-	src/shared/conf.c \
+	src/shared/conf-parser.h \
+	src/shared/conf-parser.c \
 	src/shared/string-util.h \
 	src/shared/string-util.c
 
