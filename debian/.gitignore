@@ -1,0 +1,12 @@
+*.log
+*.substvars
+/.debhelper
+/autoreconf.before
+/autoreconf.after
+/files
+/ipc-doc
+/ipcd
+/libipc1
+/libipc-dev
+/tmp
+/debhelper-build-stamp

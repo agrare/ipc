@@ -4,6 +4,7 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src              \
 	-I $(top_srcdir)/src/shared
 
+pkginclude_HEADERS =
 bin_PROGRAMS =
 noinst_PROGRAMS =
 lib_LTLIBRARIES =
@@ -17,6 +18,8 @@ ipcd_LDADD = \
 
 lib_LTLIBRARIES  += libipc.la
 libipc_la_SOURCES = \
+	src/libipc/libipc.h
+pkginclude_HEADERS += \
 	src/libipc/libipc.h
 
 noinst_LTLIBRARIES  += libshared.la
