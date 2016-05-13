@@ -114,9 +114,63 @@ static int test_string_util_strstrip(void)
 	return test_suite_run(&test_suite);
 }
 
+static int test_string_util_truncate_nl_null(void)
+{
+	truncate_nl(NULL); /* make sure it doesn't segfault */
+	return 0;
+}
+
+static int test_string_util_truncate_nl_empty_string(void)
+{
+	char str[] = "";
+	truncate_nl(str);
+	return strcmp(str, "");
+}
+
+static int test_string_util_truncate_nl_newline_only(void)
+{
+	char str[] = "\n";
+	truncate_nl(str);
+	return strcmp(str, "");
+}
+
+static int test_string_util_truncate_nl_newline_last_char(void)
+{
+	char str[] = "hello, world!\n";
+	truncate_nl(str);
+	return strcmp(str, "hello, world!");
+}
+
+static int test_string_util_truncate_nl_newline_first_char(void)
+{
+	char str[] = "\nhello, world!";
+	truncate_nl(str);
+	return strcmp(str, "");
+}
+
+static int test_string_util_truncate_nl_newline_middle(void)
+{
+	char str[] = "hello, \nworld!";
+	truncate_nl(str);
+	return strcmp(str, "hello, ");
+}
+
 static int test_string_util_truncate_nl(void)
 {
-	return 0;
+	struct test_suite test_suite = TEST_SUITE_INIT("string-util: truncate_nl");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_truncate_nl_null, "null pointer");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_truncate_nl_empty_string, "empty string");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_truncate_nl_newline_only, "newline only");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_truncate_nl_newline_last_char, "newline last char");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_truncate_nl_newline_first_char, "newline first char");
+	test_suite_add_unit_test(&test_suite,
+		test_string_util_truncate_nl_newline_middle, "newline middle");
+	return test_suite_run(&test_suite);
 }
 
 static int test_string_util(void)
