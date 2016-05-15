@@ -1,13 +1,31 @@
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "conf-parser.h"
 #include "string-util.h"
 
-static int parse_line(char *line)
+int conf_table_item_lookup(const void *table, const char *lvalue,
+		conf_parser_callback *func, void **data, void *userdata)
 {
-	char *key, *val, *p;
+	const struct conf_table_item *t;
+	for (t = table; t->lvalue; t++) {
+		if (strcmp(lvalue, t->lvalue))
+			continue;
+		*func = t->parser;
+		*data = (uint8_t *) userdata + t->offset;
+	}
+
+	return 0;
+}
+
+static int parse_line(char *line, const void *table, void *userdata)
+{
+	char *lvalue, *rvalue, *p;
+	conf_parser_callback func;
+	void *data;
 
 	/* strip leading and trailing whitespace */
 	line = strstrip(line);
@@ -35,15 +53,21 @@ static int parse_line(char *line)
 	*p = 0;
 	p++;
 
-	key = strstrip(line);
-	(void) key;
-	val = strstrip(p);
-	(void) val;
+	lvalue = strstrip(line);
+	rvalue = strstrip(p);
+
+	if (conf_table_item_lookup(table, lvalue, &func, &data, userdata) != 0) {
+		return -1;
+	}
+
+	if (func) {
+		return func(lvalue, rvalue, data);
+	}
 
 	return 0;
 }
 
-int conf_parse(const char *filename)
+int conf_parse(const char *filename, const void *table, void *userdata)
 {
 	FILE *f;
 	int err = 0;
@@ -65,7 +89,7 @@ int conf_parse(const char *filename)
 
 		truncate_nl(l);
 
-		err = parse_line(l);
+		err = parse_line(l, table, userdata);
 	}
 
 	if (!feof(f))
@@ -73,5 +97,23 @@ int conf_parse(const char *filename)
 
 	fclose(f);
 	return err;
+}
+
+int conf_parse_int(const char *lvalue, const char *rvalue, void *data)
+{
+	int *result = (int *) data;
+	(void) lvalue;
+	*result = atoi(rvalue);
+	return 0;
+}
+
+int conf_parse_string(const char *lvalue, const char *rvalue, void *data)
+{
+	char **result = (char **) data;
+	(void) lvalue;
+	*result = strdup(rvalue);
+	if (!*result)
+		return -1;
+	return 0;
 }
 

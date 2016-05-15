@@ -1,6 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
+	-D_XOPEN_SOURCE=500               \
 	-I $(top_srcdir)/src              \
 	-I $(top_srcdir)/src/shared
 
