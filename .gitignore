@@ -15,6 +15,9 @@
 /libtool
 /tags
 /test-shared
+/test-shared.log
+/test-shared.trs
+/test-suite.log
 aclocal.m4
 config.h
 config.h.in

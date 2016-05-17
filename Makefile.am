@@ -8,6 +8,7 @@ AM_CPPFLAGS = \
 pkginclude_HEADERS =
 bin_PROGRAMS =
 noinst_PROGRAMS =
+TESTS =
 lib_LTLIBRARIES =
 noinst_LTLIBRARIES =
 
@@ -43,3 +44,4 @@ test_shared_SOURCES = \
 test_shared_LDADD = \
 	libshared.la \
 	libtest.la
+TESTS += test-shared
