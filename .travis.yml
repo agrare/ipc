@@ -1,0 +1,5 @@
+language: c
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install autotools-dev automake autoconf libtool
+script: ./autogen.sh && ./configure && make && make check

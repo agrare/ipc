@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.68])
 AC_INIT([ipc], [0.0.1], [https://github.com/agrare/ipc/issues], [ipc], [http://github.com/agrare/ipc])
 
 AC_CONFIG_SRCDIR([src/ipc/ipcd.c])
@@ -14,6 +14,7 @@ AM_INIT_AUTOMAKE([subdir-objects -Wall -Werror])
 # Checks for programs.
 AC_PROG_CC
 AM_PROG_AR
+AM_PROG_CC_C_O
 
 # Checks for libraries.
 LT_INIT
