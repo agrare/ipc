@@ -39,7 +39,7 @@ libtest_la_SOURCES = \
 
 noinst_PROGRAMS += test-shared
 test_shared_SOURCES = \
-	src/shared/test-shared.c
+	test/test-shared.c
 test_shared_LDADD = \
 	libshared.la \
 	libtest.la
