@@ -38,10 +38,18 @@ libtest_la_SOURCES = \
 	src/test/unit-test.h \
 	src/test/unit-test.c
 
-noinst_PROGRAMS += test-shared
-test_shared_SOURCES = \
-	test/test-shared.c
-test_shared_LDADD = \
+noinst_PROGRAMS += test-shared-string-util
+test_shared_string_util_SOURCES = \
+	test/test-shared-string-util.c
+test_shared_string_util_LDADD = \
 	libshared.la \
 	libtest.la
-TESTS += test-shared
+TESTS += test-shared-string-util
+
+noinst_PROGRAMS += test-shared-conf-parser
+test_shared_conf_parser_SOURCES = \
+	test/test-shared-conf-parser.c
+test_shared_conf_parser_LDADD = \
+	libshared.la \
+	libtest.la
+TESTS += test-shared-conf-parser

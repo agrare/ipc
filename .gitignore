@@ -3,6 +3,8 @@
 *.lo
 *.o
 *~
+*.log
+*.trs
 .deps/
 .dirstamp
 .libs/
@@ -14,10 +16,7 @@
 /ipcd
 /libtool
 /tags
-/test-shared
-/test-shared.log
-/test-shared.trs
-/test-suite.log
+/test-*
 aclocal.m4
 config.h
 config.h.in
