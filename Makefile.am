@@ -5,18 +5,31 @@ AM_CPPFLAGS = \
 	-I $(top_srcdir)/src              \
 	-I $(top_srcdir)/src/shared
 
+systemunitdir=$(prefix)/lib/systemd/system
+
 pkginclude_HEADERS =
 bin_PROGRAMS =
 noinst_PROGRAMS =
 TESTS =
 lib_LTLIBRARIES =
 noinst_LTLIBRARIES =
+dist_systemunit_DATA =
 
 bin_PROGRAMS += ipcd
 ipcd_SOURCES = \
 	src/ipc/ipcd.c
 ipcd_LDADD = \
 	libshared.la
+dist_systemunit_DATA += \
+	units/ipcd.socket \
+	units/ipcd.service
+units/ipcd.service: units/ipcd.service.in $(top_builddir)/config.status
+	$(SED) \
+	    -e 's|[@]prefix@|$(prefix)|g' \
+	    -e 's|[@]exec_prefix@|$(exec_prefix)|g' \
+	    -e 's|[@]sbindir@|$(sbindir)|g' \
+	    -e 's|[@]datarootdir@|$(datarootdir)|g' \
+	    < "$<" > "$@"
 
 lib_LTLIBRARIES  += libipc.la
 libipc_la_SOURCES = \

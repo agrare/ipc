@@ -1,0 +1,7 @@
+[Unit]
+Description=IPC Daemon
+After=network.target
+
+[Service]
+ExecStart=@sbindir@/ipcd
+Restart=on-failure
