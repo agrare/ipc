@@ -1,4 +1,4 @@
-#include "conf-parser.h"
+#include "shared/conf-parser.h"
 #include "ipcd.h"
 
 int main(void)

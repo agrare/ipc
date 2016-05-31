@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "test/test-suite.h"
-#include "string-util.h"
+#include "shared/string-util.h"
 
 static int test_string_util_strstrip_null_string(void)
 {
