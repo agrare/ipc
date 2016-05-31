@@ -1,5 +1,5 @@
 language: c
 before_install:
- - sudo apt-get update -qq
- - sudo apt-get install autotools-dev automake autoconf libtool
+ - sudo apt-get -qq update
+ - sudo apt-get install -y autotools-dev automake autoconf libtool libsystemd-dev
 script: ./autogen.sh && ./configure && make && make check

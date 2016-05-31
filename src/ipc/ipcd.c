@@ -1,4 +1,8 @@
+#include <systemd/sd-daemon.h>
+
 #include "shared/conf-parser.h"
+#include "shared/signal.h"
+
 #include "ipcd.h"
 
 int main(void)
@@ -11,5 +15,16 @@ int main(void)
 		return -1;
 	}
 
-	return 0;
+	err = setup_signal_thread();
+	if (err != 0) {
+		return -1;
+	}
+
+	sd_notify(0, "READ=1");
+
+	err = signal_thread(signal_handler);
+
+	sd_notify(0, "STOPPING=1");
+
+	return err;
 }
