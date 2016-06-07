@@ -8,19 +8,20 @@ systemunitdir=$(prefix)/lib/systemd/system
 
 pkginclude_HEADERS =
 bin_PROGRAMS =
+sbin_PROGRAMS =
 noinst_PROGRAMS =
 TESTS =
 lib_LTLIBRARIES =
 noinst_LTLIBRARIES =
 dist_systemunit_DATA =
 
-bin_PROGRAMS += ipcd
+sbin_PROGRAMS += ipcd
 ipcd_SOURCES = \
 	src/ipc/ipcd.c
 ipcd_CFLAGS = \
-	`pkg-config libsystemd --cflags`
+	`pkg-config libsystemd-daemon --cflags`
 ipcd_LDFLAGS = \
-	`pkg-config libsystemd --libs`
+	`pkg-config libsystemd-daemon --libs`
 ipcd_LDADD = \
 	libshared.la
 dist_systemunit_DATA += \
