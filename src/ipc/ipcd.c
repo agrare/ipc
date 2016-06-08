@@ -10,7 +10,7 @@ int main(void)
 	struct ipcd_conf ipcd_conf;
 	int err;
 
-	err = conf_parse("src/ipc/ipcd.conf", ipcd_conf_table, &ipcd_conf);
+	err = conf_parse(_CONF_DIR "/ipcd.conf", ipcd_conf_table, &ipcd_conf);
 	if (err != 0) {
 		return -1;
 	}
@@ -20,7 +20,7 @@ int main(void)
 		return -1;
 	}
 
-	sd_notify(0, "READ=1");
+	sd_notify(0, "READY=1");
 
 	err = signal_thread(signal_handler);
 

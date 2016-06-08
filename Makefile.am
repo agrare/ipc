@@ -2,6 +2,7 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-D_XOPEN_SOURCE=500               \
+	-D_CONF_DIR=\"$(sysconfdir)\"     \
 	-I $(top_srcdir)/src
 
 systemunitdir=$(prefix)/lib/systemd/system
