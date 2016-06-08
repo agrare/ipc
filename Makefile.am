@@ -14,12 +14,15 @@ TESTS =
 lib_LTLIBRARIES =
 noinst_LTLIBRARIES =
 dist_systemunit_DATA =
+dist_sysconf_DATA =
 
 sbin_PROGRAMS += ipcd
 ipcd_SOURCES = \
 	src/ipc/ipcd.c
 ipcd_LDADD = \
 	libshared.la
+dist_sysconf_DATA += \
+	src/ipc/ipcd.conf
 dist_systemunit_DATA += \
 	units/ipcd.socket \
 	units/ipcd.service
