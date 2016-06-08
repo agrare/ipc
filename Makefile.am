@@ -18,10 +18,6 @@ dist_systemunit_DATA =
 sbin_PROGRAMS += ipcd
 ipcd_SOURCES = \
 	src/ipc/ipcd.c
-ipcd_CFLAGS = \
-	`pkg-config libsystemd-daemon --cflags`
-ipcd_LDFLAGS = \
-	`pkg-config libsystemd-daemon --libs`
 ipcd_LDADD = \
 	libshared.la
 dist_systemunit_DATA += \
