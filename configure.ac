@@ -18,8 +18,8 @@ AM_PROG_CC_C_O
 
 # Checks for libraries.
 LT_INIT
-AC_CHECK_LIB([libpthread], [pthread_create])
-AC_CHECK_LIB([systemd], [sd_listen_fds])
+AC_CHECK_LIB([pthread], [pthread_create])
+AC_SEARCH_LIBS([sd_notify], [systemd systemd-daemon])
 
 # Checks for header files.
 AC_CHECK_HEADER([systemd/sd-daemon.h])
