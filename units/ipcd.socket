@@ -1,7 +1,8 @@
 [Unit]
 Description=IPC daemon socket
-Before=ipcd.service
 
 [Socket]
-ListenStream=9443
-Accept=yes
+ListenStream=0.0.0.0:9443
+
+[Install]
+WantedBy=sockets.target

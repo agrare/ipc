@@ -1,6 +1,5 @@
 [Unit]
 Description=IPC Daemon
-After=network.target
 
 [Service]
 ExecStart=@sbindir@/ipcd
@@ -8,4 +7,4 @@ ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 
 [Install]
-WantedBy=ipcd.socket
+WantedBy=multi-user.target

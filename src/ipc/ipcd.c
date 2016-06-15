@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <systemd/sd-daemon.h>
 
 #include "shared/conf-parser.h"
@@ -8,7 +9,7 @@
 int main(void)
 {
 	struct ipcd_conf ipcd_conf;
-	int err;
+	int err, n_fds;
 
 	err = conf_parse(_CONF_DIR "/ipcd.conf", ipcd_conf_table, &ipcd_conf);
 	if (err != 0) {
@@ -17,6 +18,11 @@ int main(void)
 
 	err = setup_signal_thread();
 	if (err != 0) {
+		return -1;
+	}
+
+	n_fds = sd_listen_fds(1);
+	if (n_fds < 0) {
 		return -1;
 	}
 
