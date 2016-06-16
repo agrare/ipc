@@ -2,6 +2,7 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-D_XOPEN_SOURCE=500               \
+	-D_POSIX_C_SOURCE=201112L         \
 	-D_CONF_DIR=\"$(sysconfdir)\"     \
 	-I $(top_srcdir)/src
 
@@ -37,7 +38,8 @@ units/ipcd.service: units/ipcd.service.in $(top_builddir)/config.status
 
 lib_LTLIBRARIES  += libipc.la
 libipc_la_SOURCES = \
-	src/libipc/libipc.h
+	src/libipc/libipc.h \
+	src/libipc/libipc.c
 pkginclude_HEADERS += \
 	src/libipc/libipc.h
 
@@ -72,3 +74,4 @@ test_shared_conf_parser_LDADD = \
 	libshared.la \
 	libtest.la
 TESTS += test-shared-conf-parser
+
