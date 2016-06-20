@@ -46,17 +46,3 @@ int signal_thread(int (*signal_handler)(int))
 	return err;
 }
 
-int signal_handler(int sig)
-{
-	printf("received signal %d\n", sig);
-
-	switch (sig) {
-	case SIGINT:
-	case SIGTERM:
-		return 1;
-	case SIGHUP:
-		/* TODO reload config */
-	default:
-		return 0;
-	}
-}
