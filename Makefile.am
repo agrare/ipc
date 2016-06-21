@@ -50,7 +50,9 @@ libshared_la_SOURCES = \
 	src/shared/signal.h \
 	src/shared/signal.c \
 	src/shared/string-util.h \
-	src/shared/string-util.c
+	src/shared/string-util.c \
+	src/shared/thread.h \
+	src/shared/thread.c
 
 noinst_LTLIBRARIES += libtest.la
 libtest_la_SOURCES = \
