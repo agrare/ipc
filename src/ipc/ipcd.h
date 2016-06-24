@@ -5,9 +5,6 @@ struct ipcd_conf {
 	char *loglevel;
 };
 
-struct conf_table_item ipcd_conf_table[] = {
-	{"loglevel", conf_parse_string, offsetof(struct ipcd_conf, loglevel)},
-	{0, 0, 0}
-};
+extern struct conf_table_item ipcd_conf_table[];
 
 #endif /* _IPCD_H_ */
