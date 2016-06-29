@@ -16,9 +16,10 @@ int conf_table_item_lookup(const void *table, const char *lvalue,
 			continue;
 		*func = t->parser;
 		*data = (uint8_t *) userdata + t->offset;
+		return 0;
 	}
 
-	return 0;
+	return -1;
 }
 
 static int parse_line(char *line, const void *table, void *userdata)
