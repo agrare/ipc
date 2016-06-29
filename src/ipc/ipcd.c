@@ -1,4 +1,5 @@
 
+#include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <signal.h>
@@ -6,6 +7,7 @@
 #include <systemd/sd-journal.h>
 
 #include "shared/conf-parser.h"
+#include "shared/log.h"
 #include "shared/signal.h"
 
 #include "ipcd.h"
@@ -14,7 +16,7 @@ static int verbose = 0;
 
 static int signal_handler(int sig)
 {
-	printf("received signal %d\n", sig);
+	log_info("received signal %d", sig);
 
 	switch (sig) {
 	case SIGINT:
@@ -31,7 +33,7 @@ int main(int argc, char *argv[])
 {
 	const char *conf_file = _CONF_DIR "/ipcd.conf";
 	struct ipcd_conf ipcd_conf;
-	int err, n_fds;
+	int err;
 
 	for (;;) {
 		int c, option_index = 0;
@@ -60,16 +62,19 @@ int main(int argc, char *argv[])
 
 	err = conf_parse(conf_file, ipcd_conf_table, &ipcd_conf);
 	if (err != 0) {
+		log_err_errno(errno, "failed to parse %s", conf_file);
 		return -1;
 	}
 
 	err = setup_signal_thread();
 	if (err != 0) {
+		log_err_errno(errno, "failed to set up signal mask");
 		return -1;
 	}
 
-	n_fds = sd_listen_fds(1);
-	if (n_fds < 0) {
+	err = sd_listen_fds(1);
+	if (err < 0) {
+		log_err_errno(-err, "failed to get number of listen fds");
 		return -1;
 	}
 
