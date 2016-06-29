@@ -14,6 +14,11 @@
 
 static int verbose = 0;
 
+static struct conf_table_item ipcd_conf_table[] = {
+	{"loglevel", conf_parse_string, offsetof(struct ipcd_conf, loglevel)},
+	{0, 0, 0}
+};
+
 static int signal_handler(int sig)
 {
 	log_info("received signal %d", sig);

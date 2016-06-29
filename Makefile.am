@@ -20,8 +20,7 @@ dist_sysconf_DATA =
 
 sbin_PROGRAMS += ipcd
 ipcd_SOURCES = \
-	src/ipc/ipcd.c \
-	src/ipc/ipcd-conf.c
+	src/ipc/ipcd.c
 ipcd_LDADD = \
 	libshared.la
 dist_sysconf_DATA += \
