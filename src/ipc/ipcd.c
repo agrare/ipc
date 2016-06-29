@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <systemd/sd-daemon.h>
+#include <systemd/sd-journal.h>
 
 #include "shared/conf-parser.h"
 #include "shared/signal.h"

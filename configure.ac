@@ -20,9 +20,11 @@ AM_PROG_CC_C_O
 LT_INIT
 AC_CHECK_LIB([pthread], [pthread_create])
 AC_SEARCH_LIBS([sd_notify], [systemd systemd-daemon])
+AC_SEARCH_LIBS([sd_journal_print], [systemd systemd-journal])
 
 # Checks for header files.
 AC_CHECK_HEADER([systemd/sd-daemon.h])
+AC_CHECK_HEADER([systemd/sd-journal.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 
