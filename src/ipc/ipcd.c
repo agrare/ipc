@@ -1,3 +1,5 @@
+
+#include <getopt.h>
 #include <stdio.h>
 #include <signal.h>
 #include <systemd/sd-daemon.h>
@@ -7,6 +9,8 @@
 #include "shared/signal.h"
 
 #include "ipcd.h"
+
+static int verbose = 0;
 
 static int signal_handler(int sig)
 {
@@ -23,12 +27,38 @@ static int signal_handler(int sig)
 	}
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
+	const char *conf_file = _CONF_DIR "/ipcd.conf";
 	struct ipcd_conf ipcd_conf;
 	int err, n_fds;
 
-	err = conf_parse(_CONF_DIR "/ipcd.conf", ipcd_conf_table, &ipcd_conf);
+	for (;;) {
+		int c, option_index = 0;
+		const char *option_string = "f:";
+
+		static struct option long_options[] = {
+			{"file",    required_argument, 0,        'f'},
+			{"verbose", no_argument,       &verbose, 1},
+			{0,         0,                 0,        0}
+		};
+
+		c = getopt_long(argc, argv, option_string,
+		                long_options, &option_index);
+		if (c == -1) {
+			break;
+		}
+
+		switch (c) {
+		case 'f':
+			conf_file = optarg;
+			break;
+		default:
+			break;
+		}
+	}
+
+	err = conf_parse(conf_file, ipcd_conf_table, &ipcd_conf);
 	if (err != 0) {
 		return -1;
 	}
@@ -51,3 +81,4 @@ int main(void)
 
 	return err;
 }
+

@@ -8,3 +8,4 @@ struct ipcd_conf {
 extern struct conf_table_item ipcd_conf_table[];
 
 #endif /* _IPCD_H_ */
+
