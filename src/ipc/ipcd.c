@@ -1,6 +1,7 @@
 
 #include <errno.h>
 #include <getopt.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <signal.h>
 #include <systemd/sd-daemon.h>
@@ -34,10 +35,48 @@ static int signal_handler(int sig)
 	}
 }
 
+static int setup_listen_thread(pthread_t *tid)
+{
+	pthread_attr_t attr;
+	int err;
+
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
+	err = pthread_create(tid, &attr, ipcd_listen, (void *) SD_LISTEN_FDS_START);
+
+	pthread_attr_destroy(&attr);
+
+	return err;
+}
+
+static int stop_listen_thread(pthread_t tid)
+{
+	void *retval;
+	int err;
+
+	err = pthread_cancel(tid);
+	if (err != 0) {
+		log_err_errno(-err, "failed to cancel listen thread");
+		return -1;
+	}
+
+	err = pthread_join(tid, &retval);
+	if (err != 0) {
+		log_err_errno(-err, "failed to join listen threda");
+		return -1;
+	}
+
+	log_info("listen thread exited with code %p", retval);
+
+	return 0;
+}
+
 int main(int argc, char *argv[])
 {
 	const char *conf_file = _CONF_DIR "/ipcd.conf";
 	struct ipcd_conf ipcd_conf;
+	pthread_t listen_thread;
 	int err;
 
 	for (;;) {
@@ -83,11 +122,23 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	err = setup_listen_thread(&listen_thread);
+	if (err != 0) {
+		log_err_errno(-err, "failed to create listen thread");
+		return -1;
+	}
+
 	sd_notify(0, "READY=1");
 
 	err = signal_thread(signal_handler);
 
 	sd_notify(0, "STOPPING=1");
+
+	if (stop_listen_thread(listen_thread) != 0) {
+		log_err("failed to cleanly shutdown listen thread");
+	} else {
+		log_info("listen thread stopped");
+	}
 
 	return err;
 }
