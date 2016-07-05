@@ -36,60 +36,40 @@ static int signal_handler(int sig)
 	}
 }
 
-static int setup_listen_threads(pthread_t **threads, int n_threads)
+static int setup_listen_thread(pthread_t *tid, int n_fds)
 {
-	int err, i;
+	int err;
 	pthread_attr_t attr;
-
-	if (n_threads <= 0) {
-		return -EINVAL;
-	}
 
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
-	*threads = malloc(n_threads * sizeof(**threads));
-	if (*threads == NULL) {
-		return -errno;
-	}
-
-	for (i = 0; i < n_threads; i++) {
-		void *arg = (void *) (uintptr_t) SD_LISTEN_FDS_START + i;
-
-		err = pthread_create(&(*threads)[i], &attr, ipcd_listen, arg);
-		if (err != 0) {
-			log_err_errno(-err, "pthread_create");
-			(*threads)[i] = -1;
-		}
-	}
+	err = pthread_create(tid, &attr, ipcd_listen, (void *) (uintptr_t) n_fds);
 
 	pthread_attr_destroy(&attr);
 
-	return 0;
+	return err;
 }
 
-static int stop_listen_threads(pthread_t *threads, int n_threads)
+static int stop_listen_thread(pthread_t thread)
 {
 	void *retval;
-	int err, i;
+	int err;
 
-	for (i = 0; i < n_threads; i++) {
-		err = pthread_cancel(threads[i]);
-		if (err != 0) {
-			log_err_errno(-err, "failed to cancel listen thread");
-			continue;
-		}
-
-		err = pthread_join(threads[i], &retval);
-		if (err != 0) {
-			log_err_errno(-err, "failed to join listen threda");
-			continue;
-		}
-
-		log_info("listen thread exited with code %p", retval);
+	err = pthread_cancel(thread);
+	if (err != 0) {
+		log_err_errno(-err, "failed to cancel listen thread");
+		return err;
 	}
 
-	free(threads);
+	err = pthread_join(thread, &retval);
+	if (err != 0) {
+		log_err_errno(-err, "failed to join listen threda");
+		return err;
+	}
+
+	log_info("listen thread exited with code %p", retval);
+
 	return 0;
 }
 
@@ -97,8 +77,8 @@ int main(int argc, char *argv[])
 {
 	const char *conf_file = _CONF_DIR "/ipcd.conf";
 	struct ipcd_conf ipcd_conf;
-	pthread_t *listen_threads;
-	int err, n_threads;
+	pthread_t listen_thread;
+	int err, n_fds;
 
 	for (;;) {
 		int c, option_index = 0;
@@ -141,14 +121,11 @@ int main(int argc, char *argv[])
 	if (err < 0) {
 		log_err_errno(-err, "failed to get number of listen fds");
 		return -1;
-	} else if (err == 0) {
-		log_info("no sockets given");
-		return 0;
 	} else {
-		n_threads = err;
+		n_fds = err;
 	}
 
-	err = setup_listen_threads(&listen_threads, n_threads);
+	err = setup_listen_thread(&listen_thread, n_fds);
 	if (err != 0) {
 		log_err_errno(-err, "failed to create listen threads");
 		return -1;
@@ -160,7 +137,7 @@ int main(int argc, char *argv[])
 
 	sd_notify(0, "STOPPING=1");
 
-	if (stop_listen_threads(listen_threads, n_threads) != 0) {
+	if (stop_listen_thread(listen_thread) != 0) {
 		log_err("failed to cleanly shutdown listen thread");
 	} else {
 		log_info("listen thread stopped");

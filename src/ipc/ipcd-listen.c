@@ -5,13 +5,14 @@
 #include <poll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <systemd/sd-daemon.h>
 #include <unistd.h>
 
 #include "shared/log.h"
 
 #include "ipcd.h"
 
-#define _MAX_SOCKETS 1024
+#define _MAX_FDS 1024
 
 static int ipcd_listen_accept(int sockfd)
 {
@@ -36,23 +37,35 @@ static int ipcd_listen_accept(int sockfd)
 	return fd;
 }
 
-void *ipcd_listen(void *arg)
+static int setup_listen_fds(struct pollfd *fds, int n_fds)
 {
-	struct pollfd fds[_MAX_SOCKETS];
-	int err, listen_fd = (uintptr_t) arg;
-	nfds_t i, nfds = 1;
+	int i, fd, err = 0;
 
-	if (fcntl(listen_fd, F_SETFD, O_NONBLOCK) == -1) {
-		log_err_errno(errno, "fcntl %d", listen_fd);
-		pthread_exit((void *) -1);
+	for (i = 0; i < n_fds; i++) {
+		fd = SD_LISTEN_FDS_START + i;
+
+		err = fcntl(fd, F_SETFD, O_NONBLOCK);
+		if (err == -1) {
+			log_err_errno(errno, "fcntl %d O_NONBLOCK", fd);
+			break;
+		}
+
+		fds[i].fd     = fd;
+		fds[i].events = POLLIN;
 	}
 
-	fds[0].fd = listen_fd;
-	fds[0].events = POLLIN;
+	return 0;
+}
 
-	for (i = 1; i < _MAX_SOCKETS; i++) {
-		fds[i].fd = -1;
-		fds[i].events = 0;
+void *ipcd_listen(void *arg)
+{
+	int i, err, n_fds, n_listen_fds;
+	struct pollfd fds[_MAX_FDS] = {{-1, 0, 0}};
+
+	n_fds = n_listen_fds = (uintptr_t) arg;
+
+	if (setup_listen_fds(fds, n_listen_fds) != 0) {
+		pthread_exit((void *) -1);
 	}
 
 	for (;;) {
@@ -60,7 +73,7 @@ void *ipcd_listen(void *arg)
 
 		log_info("polling for events");
 
-		err = poll(fds, nfds, -1);
+		err = poll(fds, n_fds, -1);
 		if (err == -1) {
 			log_err_errno(errno, "poll");
 			continue;
@@ -68,12 +81,12 @@ void *ipcd_listen(void *arg)
 			continue;
 		}
 
-		for (i = 0; i < nfds; i++) {
+		for (i = 0; i < n_fds; i++) {
 			if (fds[i].revents == 0) {
 				continue;
 			}
 
-			if (fds[i].fd == listen_fd) {
+			if (i < n_listen_fds) {
 				new_fd = ipcd_listen_accept(fds[i].fd);
 				if (new_fd != -1) {
 					log_info("received new connection %d", new_fd);
@@ -95,12 +108,12 @@ void *ipcd_listen(void *arg)
 		}
 
 		if (new_fd != -1) {
-			if (nfds >= _MAX_SOCKETS) {
+			if (n_fds >= _MAX_FDS) {
 				close(new_fd);
 			} else {
-				fds[nfds].fd = new_fd;
-				fds[nfds].events = POLLIN;
-				nfds++;
+				fds[n_fds].fd = new_fd;
+				fds[n_fds].events = POLLIN;
+				n_fds++;
 			}
 		}
 	}
