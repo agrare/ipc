@@ -1,4 +1,6 @@
 
+#include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -100,12 +102,42 @@ int conf_parse(const char *filename, const void *table, void *userdata)
 	return err;
 }
 
+static int conf_parse_int_internal(const char *lvalue, const char *rvalue,
+		long long int *result)
+{
+	int err = 0, save_errno;
+	char *endptr;
+
+	(void) lvalue;
+
+	save_errno = errno;
+	errno = 0;
+
+	*result = strtoll(rvalue, &endptr, 0);
+	if (errno != 0) {
+		err = -errno;
+	}
+
+	errno = save_errno;
+
+	return err;
+}
+
 int conf_parse_int(const char *lvalue, const char *rvalue, void *data)
 {
-	int *result = (int *) data;
-	(void) lvalue;
-	*result = atoi(rvalue);
-	return 0;
+	long long int result;
+	int err;
+
+	err = conf_parse_int_internal(lvalue, rvalue, &result);
+	if (!err) {
+		if (result > INT_MAX || result < INT_MIN) {
+			err = -ERANGE;
+		} else {
+			*((int *) data) = result;
+		}
+	}
+
+	return err;
 }
 
 int conf_parse_string(const char *lvalue, const char *rvalue, void *data)
