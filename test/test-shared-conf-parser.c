@@ -36,6 +36,18 @@ static int test_conf_parse_int_empty_string(void)
 	return ret;
 }
 
+static int test_conf_parse_int_zero(void)
+{
+	int ret, result;
+
+	ret = conf_parse_int(NULL, "0", &result);
+	if (!ret) {
+		ret = result != 0;
+	}
+
+	return ret;
+}
+
 static int test_conf_parse_int_overflow(void)
 {
 	int ret, result;
@@ -54,17 +66,49 @@ static int test_conf_parse_int_underflow(void)
 	return ret;
 }
 
+static int test_conf_parse_unsigned_overflow(void)
+{
+	int ret;
+	unsigned result;
+
+	ret = conf_parse_unsigned(NULL, "4294967296", &result) != -ERANGE;
+
+	return ret;
+}
+
+static int test_conf_parse_unsigned_zero(void)
+{
+	int ret;
+	unsigned result;
+
+	ret = conf_parse_unsigned(NULL, "0", &result);
+	if (!ret) {
+		ret = result != 0;
+	}
+
+	return ret;
+}
+
 static void test_conf_parse_int(struct test_suite *test_suite)
 {
 	test_suite_add_unit_test(test_suite,
 		test_conf_parse_int_empty_string,
 		"conf_parse_int: empty string");
 	test_suite_add_unit_test(test_suite,
+		test_conf_parse_int_zero,
+		"conf_parse_int: zero string");
+	test_suite_add_unit_test(test_suite,
 		test_conf_parse_int_overflow,
 		"conf_parse_int: overflow");
 	test_suite_add_unit_test(test_suite,
 		test_conf_parse_int_underflow,
 		"conf_parse_int: underflow");
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_unsigned_zero,
+		"conf_parse_unsigned: zero string");
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_unsigned_overflow,
+		"conf_parse_unsigned: overflow");
 }
 
 int main(void)

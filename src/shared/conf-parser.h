@@ -15,6 +15,7 @@ struct conf_table_item {
 extern int conf_parse(const char *filename, const void *table, void *userdata);
 
 extern int conf_parse_int(const char *lvalue, const char *rvalue, void *data);
+extern int conf_parse_unsigned(const char *lvalue, const char *rvalue, void *data);
 extern int conf_parse_string(const char *lvalue, const char *rvalue, void *data);
 
 #endif /* _SHARED_CONF_PARSER_H */

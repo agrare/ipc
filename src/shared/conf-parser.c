@@ -123,6 +123,27 @@ static int conf_parse_int_internal(const char *lvalue, const char *rvalue,
 	return err;
 }
 
+static int conf_parse_unsigned_internal(const char *lvalue, const char *rvalue,
+		unsigned long long int *result)
+{
+	int err = 0, save_errno;
+	char *endptr;
+
+	(void) lvalue;
+
+	save_errno = errno;
+	errno = 0;
+
+	*result = strtoull(rvalue, &endptr, 0);
+	if (errno != 0) {
+		err = -errno;
+	}
+
+	errno = save_errno;
+
+	return err;
+}
+
 int conf_parse_int(const char *lvalue, const char *rvalue, void *data)
 {
 	long long int result;
@@ -131,6 +152,23 @@ int conf_parse_int(const char *lvalue, const char *rvalue, void *data)
 	err = conf_parse_int_internal(lvalue, rvalue, &result);
 	if (!err) {
 		if (result > INT_MAX || result < INT_MIN) {
+			err = -ERANGE;
+		} else {
+			*((int *) data) = result;
+		}
+	}
+
+	return err;
+}
+
+int conf_parse_unsigned(const char *lvalue, const char *rvalue, void *data)
+{
+	unsigned long long int result;
+	int err;
+
+	err = conf_parse_unsigned_internal(lvalue, rvalue, &result);
+	if (!err) {
+		if (result > UINT_MAX) {
 			err = -ERANGE;
 		} else {
 			*((int *) data) = result;
