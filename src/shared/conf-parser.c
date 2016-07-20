@@ -9,26 +9,25 @@
 #include "conf-parser.h"
 #include "string-util.h"
 
-int conf_table_item_lookup(const void *table, const char *lvalue,
-		conf_parser_callback *func, void **data, void *userdata)
+void conf_table_item_lookup(const void *table, const char *lvalue,
+                            conf_parser_callback *func, void **data,
+			    void *userdata)
 {
 	const struct conf_table_item *t;
+
 	for (t = table; t->lvalue; t++) {
 		if (strcmp(lvalue, t->lvalue))
 			continue;
 		*func = t->parser;
 		*data = (uint8_t *) userdata + t->offset;
-		return 0;
 	}
-
-	return -1;
 }
 
 static int parse_line(char *line, const void *table, void *userdata)
 {
 	char *lvalue, *rvalue, *p;
-	conf_parser_callback func;
-	void *data;
+	conf_parser_callback func = NULL;
+	void *data = NULL;
 
 	/* strip leading and trailing whitespace */
 	line = strstrip(line);
@@ -59,11 +58,9 @@ static int parse_line(char *line, const void *table, void *userdata)
 	lvalue = strstrip(line);
 	rvalue = strstrip(p);
 
-	if (conf_table_item_lookup(table, lvalue, &func, &data, userdata) != 0) {
-		return -1;
-	}
+	conf_table_item_lookup(table, lvalue, &func, &data, userdata);
 
-	if (func) {
+	if (func && data) {
 		return func(lvalue, rvalue, data);
 	}
 
