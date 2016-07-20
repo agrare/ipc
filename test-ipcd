@@ -1,0 +1,4 @@
+#!/bin/bash
+
+sudo systemctl enable ipcd.socket || exit 1
+sudo systemctl enable ipcd.service || exit 1

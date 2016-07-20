@@ -78,3 +78,4 @@ test_shared_conf_parser_LDADD = \
 	libtest.la
 TESTS += test-shared-conf-parser
 
+TESTS += test-ipcd

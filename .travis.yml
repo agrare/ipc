@@ -3,5 +3,6 @@ sudo: required
 dist: trusty
 before_install:
  - sudo apt-get -qq update
- - sudo apt-get install -y autotools-dev automake autoconf libtool libsystemd-daemon-dev libsystemd-journal-dev
-script: ./autogen.sh && ./configure CFLAGS='-Wall -Wextra -Werror' && make && make check
+ - sudo apt-get install -y systemd-services autotools-dev automake autoconf libtool libsystemd-daemon-dev libsystemd-journal-dev
+script: ./autogen.sh && ./configure CFLAGS='-Wall -Wextra -Werror' && make && sudo make install && make check
+after_failure: cat test-suite.log
