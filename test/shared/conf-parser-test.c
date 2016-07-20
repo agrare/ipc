@@ -4,6 +4,8 @@
 #include "test/test-suite.h"
 #include "shared/conf-parser.h"
 
+#define TEST_DATA_DIR "test/shared/data"
+
 static int test_conf_parse_string_empty_string(void)
 {
 	char *result;
@@ -111,6 +113,47 @@ static void test_conf_parse_int(struct test_suite *test_suite)
 		"conf_parse_unsigned: overflow");
 }
 
+static int test_conf_parse_null_file(void)
+{
+	return conf_parse(NULL, NULL, NULL) != -1;
+}
+
+static int test_conf_parse_empty_file(void)
+{
+	const char path[] = TEST_DATA_DIR "/conf-parser-test-empty.conf";
+	struct conf_table_item conf_table[] = {{0, 0, 0}};
+
+	return conf_parse(path, conf_table, NULL);
+}
+
+static int test_conf_parse_newline_file(void)
+{
+	const char path[] = TEST_DATA_DIR "/conf-parser-test-newline.conf";
+	struct conf_table_item conf_table[] = {{0, 0, 0}};
+
+	return conf_parse(path, conf_table, NULL);
+}
+
+static int test_conf_parse_comments_file(void)
+{
+	const char path[] = TEST_DATA_DIR "/conf-parser-test-comments.conf";
+	struct conf_table_item conf_table[] = {{0, 0, 0}};
+
+	return conf_parse(path, conf_table, NULL);
+}
+
+static void test_conf_parse(struct test_suite *test_suite)
+{
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_null_file, "conf_parse: null file");
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_empty_file, "conf_parse: empty file");
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_newline_file, "conf_parse: single newline");
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_comments_file, "conf_parse: only comments");
+}
+
 int main(void)
 {
 	struct test_suite conf_parser_test_suite =
@@ -119,6 +162,7 @@ int main(void)
 
 	test_conf_parse_string(&conf_parser_test_suite);
 	test_conf_parse_int(&conf_parser_test_suite);
+	test_conf_parse(&conf_parser_test_suite);
 
 	nr_errors = test_suite_run(&conf_parser_test_suite);
 	if (nr_errors > 0) {
