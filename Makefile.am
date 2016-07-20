@@ -64,7 +64,7 @@ libtest_la_SOURCES = \
 
 noinst_PROGRAMS += test-shared-string-util
 test_shared_string_util_SOURCES = \
-	test/test-shared-string-util.c
+	test/shared/string-util-test.c
 test_shared_string_util_LDADD = \
 	libshared.la \
 	libtest.la
@@ -72,7 +72,7 @@ TESTS += test-shared-string-util
 
 noinst_PROGRAMS += test-shared-conf-parser
 test_shared_conf_parser_SOURCES = \
-	test/test-shared-conf-parser.c
+	test/shared/conf-parser-test.c
 test_shared_conf_parser_LDADD = \
 	libshared.la \
 	libtest.la
