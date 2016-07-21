@@ -9,6 +9,8 @@
 #include "conf-parser.h"
 #include "string-util.h"
 
+#define COMMENTS   "#"
+
 void conf_table_item_lookup(const void *table, const char *lvalue,
                             conf_parser_callback *func, void **data,
 			    void *userdata)
