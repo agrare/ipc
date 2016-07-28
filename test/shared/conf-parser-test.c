@@ -68,6 +68,46 @@ static int test_conf_parse_int_underflow(void)
 	return ret;
 }
 
+static int test_conf_parse_long_int_overflow(void)
+{
+	long int result;
+	int ret;
+
+	ret = conf_parse_long_int(NULL, "9223372036854775808", &result) != -ERANGE;
+
+	return ret;
+}
+
+static int test_conf_parse_long_int_underflow(void)
+{
+	long int result;
+	int ret;
+
+	ret = conf_parse_long_int(NULL, "-9223372036854775809", &result) != -ERANGE;
+
+	return ret;
+}
+
+static int test_conf_parse_long_long_int_overflow(void)
+{
+	long long int result;
+	int ret;
+
+	ret = conf_parse_long_long_int(NULL, "9223372036854775808", &result) != -ERANGE;
+
+	return ret;
+}
+
+static int test_conf_parse_long_long_int_underflow(void)
+{
+	long long int result;
+	int ret;
+
+	ret = conf_parse_long_long_int(NULL, "-9223372036854775809", &result) != -ERANGE;
+
+	return ret;
+}
+
 static int test_conf_parse_unsigned_overflow(void)
 {
 	int ret;
@@ -91,6 +131,26 @@ static int test_conf_parse_unsigned_zero(void)
 	return ret;
 }
 
+static int test_conf_parse_unsigned_long_overflow(void)
+{
+	int ret;
+	unsigned long result;
+
+	ret = conf_parse_unsigned_long(NULL, "18446744073709551616", &result) != -ERANGE;
+
+	return ret;
+}
+
+static int test_conf_parse_unsigned_long_long_overflow(void)
+{
+	int ret;
+	unsigned long long result;
+
+	ret = conf_parse_unsigned_long_long(NULL, "18446744073709551616", &result) != -ERANGE;
+
+	return ret;
+}
+
 static void test_conf_parse_int(struct test_suite *test_suite)
 {
 	test_suite_add_unit_test(test_suite,
@@ -106,11 +166,29 @@ static void test_conf_parse_int(struct test_suite *test_suite)
 		test_conf_parse_int_underflow,
 		"conf_parse_int: underflow");
 	test_suite_add_unit_test(test_suite,
+		test_conf_parse_long_int_overflow,
+		"conf_parse_long_int: overflow");
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_long_int_underflow,
+		"conf_parse_long_int: underflow");
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_long_long_int_overflow,
+		"conf_parse_long_long_int: overflow");
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_long_long_int_underflow,
+		"conf_parse_long_long_int: underflow");
+	test_suite_add_unit_test(test_suite,
 		test_conf_parse_unsigned_zero,
 		"conf_parse_unsigned: zero string");
 	test_suite_add_unit_test(test_suite,
 		test_conf_parse_unsigned_overflow,
 		"conf_parse_unsigned: overflow");
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_unsigned_long_overflow,
+		"conf_parse_unsigned_long: overflow");
+	test_suite_add_unit_test(test_suite,
+		test_conf_parse_unsigned_long_long_overflow,
+		"conf_parse_unsigned_long_long: overflow");
 }
 
 static int test_conf_parse_null_file(void)
