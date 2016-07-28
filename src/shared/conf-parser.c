@@ -13,7 +13,7 @@
 
 void conf_table_item_lookup(const void *table, const char *lvalue,
                             conf_parser_callback *func, void **data,
-			    void *userdata)
+                            void *userdata)
 {
 	const struct conf_table_item *t;
 
@@ -160,6 +160,40 @@ int conf_parse_int(const char *lvalue, const char *rvalue, void *data)
 	return err;
 }
 
+int conf_parse_long_int(const char *lvalue, const char *rvalue, void *data)
+{
+	long long int result;
+	int err;
+
+	err = conf_parse_int_internal(lvalue, rvalue, &result);
+	if (!err) {
+		if (result > LONG_MAX || result < LONG_MIN) {
+			err = -ERANGE;
+		} else {
+			*((int *) data) = result;
+		}
+	}
+
+	return err;
+}
+
+int conf_parse_long_long_int(const char *lvalue, const char *rvalue, void *data)
+{
+	long long int result;
+	int err;
+
+	err = conf_parse_int_internal(lvalue, rvalue, &result);
+	if (!err) {
+		if (result > LLONG_MAX || result < LLONG_MIN) {
+			err = -ERANGE;
+		} else {
+			*((int *) data) = result;
+		}
+	}
+
+	return err;
+}
+
 int conf_parse_unsigned(const char *lvalue, const char *rvalue, void *data)
 {
 	unsigned long long int result;
@@ -168,6 +202,40 @@ int conf_parse_unsigned(const char *lvalue, const char *rvalue, void *data)
 	err = conf_parse_unsigned_internal(lvalue, rvalue, &result);
 	if (!err) {
 		if (result > UINT_MAX) {
+			err = -ERANGE;
+		} else {
+			*((int *) data) = result;
+		}
+	}
+
+	return err;
+}
+
+int conf_parse_unsigned_long(const char *lvalue, const char *rvalue, void *data)
+{
+	unsigned long long int result;
+	int err;
+
+	err = conf_parse_unsigned_internal(lvalue, rvalue, &result);
+	if (!err) {
+		if (result > ULONG_MAX) {
+			err = -ERANGE;
+		} else {
+			*((int *) data) = result;
+		}
+	}
+
+	return err;
+}
+
+int conf_parse_unsigned_long_long(const char *lvalue, const char *rvalue, void *data)
+{
+	unsigned long long int result;
+	int err;
+
+	err = conf_parse_unsigned_internal(lvalue, rvalue, &result);
+	if (!err) {
+		if (result > ULLONG_MAX) {
 			err = -ERANGE;
 		} else {
 			*((int *) data) = result;
